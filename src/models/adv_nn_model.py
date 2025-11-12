@@ -100,6 +100,7 @@ def train_adv_nn(
             loss_pred = criterion_pred(logits_y, y_batch)
 
             y_batch_binary = y_batch.long()
+            batch_size = y_batch_binary.shape[0]
 
             mask_y0 = y_batch_binary == 0
             mask_y1 = y_batch_binary == 1
@@ -109,14 +110,16 @@ def train_adv_nn(
                 h0 = grad_reverse(h[mask_y0], config.lambda_adv)
                 logits_a0 = adversary_y0(h0)
                 loss_adv_y0 = criterion_adv(logits_a0, A_batch[mask_y0])
+                loss_adv_y0 = loss_adv_y0 * (mask_y0.sum() / batch_size)
 
             loss_adv_y1 = torch.tensor(0.0, device=device)
             if mask_y1.any():
                 h1 = grad_reverse(h[mask_y1], config.lambda_adv)
                 logits_a1 = adversary_y1(h1)
                 loss_adv_y1 = criterion_adv(logits_a1, A_batch[mask_y1])
+                loss_adv_y1 = loss_adv_y1 * (mask_y1.sum() / batch_size)
 
-            total_loss = loss_pred - (loss_adv_y0 + loss_adv_y1)
+            total_loss = loss_pred + loss_adv_y0 + loss_adv_y1
             total_loss.backward()
             optimizer.step()
 

@@ -1,0 +1,18 @@
+# Results directory
+
+Each complete experiment run is stored under `results/<run-id>/`, where `<run-id>` is a timestamp (`YYYYMMDD_HHMMSS`).  
+Inside each run folder:
+
+- `README.md` — consolidated summary (settings, key findings, next steps).
+- Subfolders per experiment (`baseline/`, `lambda_sweep/`, `sanity_bias_vs_nobias/`, `sanity_with_vs_without_proxy/`, …), each containing `metrics.csv` (plus optional artifacts like plots).
+
+To add a new run:
+
+1. Create `results/<run-id>/` after executing the scripts.
+2. Move each experiment’s outputs into subfolders inside that run directory.
+3. Update `results/<run-id>/README.md` with metrics tables and commentary.
+4. Append the run to the log below.
+
+| Run ID | Experiments | Description |
+| --- | --- | --- |
+| 20251112_175008 | baseline, lambda_sweep, sanity_bias_vs_nobias, sanity_with_vs_without_proxy | Default configs after ADV_NN fix (`lambda_adv = 0.1`). |

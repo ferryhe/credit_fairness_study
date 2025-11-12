@@ -20,9 +20,6 @@ dist/
 # Jupyter checkpoints
 .ipynb_checkpoints/
 
-# Results / generated data
-results/
-
 # IDE
 .idea/
 .vscode/
