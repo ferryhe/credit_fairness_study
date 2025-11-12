@@ -101,6 +101,7 @@ def run_proxy_experiment(sim_cfg, device, train_cfg, eval_cfg):
 def main() -> None:
     sim_cfg, train_cfg, eval_cfg = get_default_configs()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    eval_cfg.target_acceptance_rate = 0.02
 
     run_measurement_bias_experiment(sim_cfg, device, train_cfg, eval_cfg)
     run_proxy_experiment(sim_cfg, device, train_cfg, eval_cfg)

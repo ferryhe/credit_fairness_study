@@ -4,6 +4,7 @@ import numpy as np
 
 from src.evaluation.metrics import compute_accuracy_metrics
 from src.evaluation.fairness import fairness_metrics
+from src.evaluation.thresholds import threshold_for_acceptance_rate
 
 
 def test_metrics_and_fairness_outputs():
@@ -43,3 +44,12 @@ def test_metrics_and_fairness_outputs():
 
     assert fairness["selection_rate_0"] == 0.5
     assert fairness["selection_rate_1"] == 0.5
+
+
+def test_threshold_for_acceptance_rate():
+    y_proba = np.linspace(0.0, 1.0, 101)
+    target_rate = 0.1
+    thr = threshold_for_acceptance_rate(y_proba, target_rate)
+    actual_rate = (y_proba >= thr).mean()
+    assert actual_rate >= target_rate
+    assert actual_rate - target_rate < 0.05

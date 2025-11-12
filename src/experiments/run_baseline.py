@@ -19,6 +19,7 @@ def main() -> None:
     df_train, df_test = train_test_split_df(df, test_size=0.2, seed=sim_cfg.seed)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    eval_cfg.target_acceptance_rate = 0.02
 
     results = []
     results.append(train_and_eval_glm(df_train, df_test, eval_cfg))

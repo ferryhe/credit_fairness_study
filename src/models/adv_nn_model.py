@@ -10,7 +10,7 @@ from torch.utils.data import DataLoader
 
 class GradientReversal(torch.autograd.Function):
     @staticmethod
-    def forward(ctx, x, lambda_adv):
+    def forward(ctx, x, lambda_adv: float = 1.0):
         ctx.lambda_adv = lambda_adv
         return x.view_as(x)
 
@@ -19,7 +19,7 @@ class GradientReversal(torch.autograd.Function):
         return -ctx.lambda_adv * grad_output, None
 
 
-def grad_reverse(x: torch.Tensor, lambda_adv: float) -> torch.Tensor:
+def grad_reverse(x: torch.Tensor, lambda_adv: float = 1.0) -> torch.Tensor:
     return GradientReversal.apply(x, lambda_adv)
 
 
@@ -107,19 +107,20 @@ def train_adv_nn(
 
             loss_adv_y0 = torch.tensor(0.0, device=device)
             if mask_y0.any():
-                h0 = grad_reverse(h[mask_y0], config.lambda_adv)
+                h0 = grad_reverse(h[mask_y0], 1.0)
                 logits_a0 = adversary_y0(h0)
                 loss_adv_y0 = criterion_adv(logits_a0, A_batch[mask_y0])
                 loss_adv_y0 = loss_adv_y0 * (mask_y0.sum() / batch_size)
 
             loss_adv_y1 = torch.tensor(0.0, device=device)
             if mask_y1.any():
-                h1 = grad_reverse(h[mask_y1], config.lambda_adv)
+                h1 = grad_reverse(h[mask_y1], 1.0)
                 logits_a1 = adversary_y1(h1)
                 loss_adv_y1 = criterion_adv(logits_a1, A_batch[mask_y1])
                 loss_adv_y1 = loss_adv_y1 * (mask_y1.sum() / batch_size)
 
-            total_loss = loss_pred + loss_adv_y0 + loss_adv_y1
+            adv_penalty = config.lambda_adv * (loss_adv_y0 + loss_adv_y1)
+            total_loss = loss_pred + adv_penalty
             total_loss.backward()
             optimizer.step()
 

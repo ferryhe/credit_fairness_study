@@ -20,8 +20,9 @@ def main() -> None:
     df_train, df_test = train_test_split_df(df, test_size=0.2, seed=sim_cfg.seed)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    eval_cfg.target_acceptance_rate = 0.02
 
-    lambdas = [0.1, 0.3, 0.5, 1.0, 3.0]
+    lambdas = [0.05, 0.1, 0.2, 0.3, 0.5, 0.8, 1.2, 2.0]
     rows: list[dict[str, float]] = []
 
     for lambda_val in lambdas:
@@ -29,14 +30,21 @@ def main() -> None:
         metrics = train_and_eval_adv_nn(
             df_train, df_test, sim_cfg, cfg, eval_cfg, device
         )
-        rows.append(
-            {
-                "lambda_adv": lambda_val,
-                "roc_auc": metrics.get("roc_auc", np.nan),
-                "eo_gap_tpr": metrics.get("eo_gap_tpr", np.nan),
-                "eo_gap_fpr": metrics.get("eo_gap_fpr", np.nan),
-            }
-        )
+        row = {
+            "lambda_adv": lambda_val,
+            "roc_auc": metrics.get("roc_auc", np.nan),
+            "eo_gap_tpr": metrics.get("eo_gap_tpr", np.nan),
+            "eo_gap_fpr": metrics.get("eo_gap_fpr", np.nan),
+            "tpr_0": metrics.get("tpr_0", np.nan),
+            "tpr_1": metrics.get("tpr_1", np.nan),
+            "fpr_0": metrics.get("fpr_0", np.nan),
+            "fpr_1": metrics.get("fpr_1", np.nan),
+            "selection_rate_0": metrics.get("selection_rate_0", np.nan),
+            "selection_rate_1": metrics.get("selection_rate_1", np.nan),
+            "dp_diff": metrics.get("dp_diff", np.nan),
+            "dp_ratio": metrics.get("dp_ratio", np.nan),
+        }
+        rows.append(row)
 
     sweep_df = pd.DataFrame(rows)
     print(sweep_df)

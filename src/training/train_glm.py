@@ -5,6 +5,7 @@ from sklearn.preprocessing import StandardScaler
 
 from ..evaluation.metrics import compute_accuracy_metrics
 from ..evaluation.fairness import fairness_metrics
+from ..evaluation.thresholds import threshold_for_acceptance_rate
 from ..models.glm_model import GLMClassifier
 
 
@@ -44,9 +45,18 @@ def train_and_eval_glm(df_train, df_test, eval_cfg) -> dict:
 
     accuracy = compute_accuracy_metrics(y_test, y_proba)
     fairness = fairness_metrics(y_test, y_proba, A_test, threshold=eval_cfg.threshold)
-
-    return {
+    metrics = {
         "model_name": "GLM",
         **accuracy,
         **fairness,
     }
+
+    target_rate = getattr(eval_cfg, "target_acceptance_rate", None)
+    if target_rate is not None:
+        thr = threshold_for_acceptance_rate(y_proba, target_rate)
+        fairness_fixed = fairness_metrics(y_test, y_proba, A_test, threshold=thr)
+        metrics["target_acceptance_rate"] = target_rate
+        metrics["threshold_fixed_r"] = thr
+        metrics.update({f"{k}_fixed_r": v for k, v in fairness_fixed.items()})
+
+    return metrics

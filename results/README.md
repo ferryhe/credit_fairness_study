@@ -16,3 +16,6 @@ To add a new run:
 | Run ID | Experiments | Description |
 | --- | --- | --- |
 | 20251112_175008 | baseline, lambda_sweep, sanity_bias_vs_nobias, sanity_with_vs_without_proxy | Default configs after ADV_NN fix (`lambda_adv = 0.1`). |
+| 20251112_175645 | lambda_sweep | λ sweep after removing double-counting of `lambda_adv` in adversarial training. |
+| 20251112_180036 | baseline | Added acceptance-rate thresholding (r = 2%) to compare fairness at matched selection rates. |
+| 20251112_181121 | lambda_sweep | Fine-grained λ grid `[0.05 … 2.0]` with detailed fairness columns. |

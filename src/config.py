@@ -36,6 +36,7 @@ class TrainingConfig:
 @dataclass(slots=True)
 class EvalConfig:
     threshold: float = 0.5
+    target_acceptance_rate: float | None = None
 
 
 def get_default_configs() -> tuple[SimulationConfig, TrainingConfig, EvalConfig]:
