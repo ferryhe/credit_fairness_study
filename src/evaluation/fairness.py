@@ -81,3 +81,48 @@ def fairness_metrics(y_true, y_proba, A, threshold: float = 0.5) -> dict:
         metrics["dp_ratio"] = np.nan
 
     return metrics
+
+
+def find_threshold_for_target_rate(y_proba, target_rate: float) -> float:
+    """
+    Determine a probability threshold that yields approximately target_rate positives.
+    """
+
+    probs = np.asarray(y_proba, dtype=float).ravel()
+    if probs.size == 0:
+        raise ValueError("y_proba must contain at least one element.")
+    if not (0.0 < target_rate < 1.0):
+        raise ValueError("target_rate must be in (0, 1).")
+
+    sorted_probs = np.sort(probs)[::-1]
+    n = sorted_probs.size
+    k = int(target_rate * n)
+
+    if k <= 0:
+        threshold = float(sorted_probs[0] + 1e-8)
+    elif k >= n:
+        threshold = float(sorted_probs[-1] - 1e-8)
+    else:
+        threshold = float(sorted_probs[k - 1])
+    return threshold
+
+
+def fairness_at_target_rate(y_true, y_proba, A, target_rate: float) -> dict:
+    """
+    Compute fairness metrics at a threshold chosen to hit a desired selection rate.
+    """
+
+    threshold = find_threshold_for_target_rate(y_proba, target_rate)
+    fairness = fairness_metrics(y_true, y_proba, A, threshold=threshold)
+    actual_rate = float(
+        np.mean(np.asarray(y_proba, dtype=float).ravel() >= threshold)
+    )
+    extended = dict(fairness)
+    extended.update(
+        {
+            "threshold": threshold,
+            "target_rate": target_rate,
+            "actual_rate": actual_rate,
+        }
+    )
+    return extended

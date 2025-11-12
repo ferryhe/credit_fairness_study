@@ -21,3 +21,4 @@ To add a new run:
 | 20251112_181121 | lambda_sweep | Fine-grained λ grid `[0.05 … 2.0]` with detailed fairness columns. |
 | 20251112_181612 | lambda_sweep | Same grid, now with 3-epoch warm-up (predictor-only) before adversarial training. |
 | 20251112_182507 | lambda_sweep | Warm-up increased to 5 epochs; evaluates stability vs accuracy trade-offs. |
+| 20251112_183201 | fixed_rate | Compares GLM/NN/ADV_NN at a shared 2% approval rate. |
