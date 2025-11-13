@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from typing import Iterable
+
 import gradio as gr
 import pandas as pd
 
@@ -43,7 +45,7 @@ def _plot_images() -> list[str]:
     return [str(p) for p in files if p.exists()]
 
 
-def load_latest_run():
+def load_latest_run() -> tuple[str, str, pd.DataFrame, list[str]]:
     run_root = _latest_run()
     if run_root is None:
         return (
@@ -63,20 +65,15 @@ with gr.Blocks(title="Credit Fairness Dashboard") as demo:
     gr.Markdown("# Credit Insurance Fairness Study")
     gr.Markdown("Latest run artifacts under `results/`. Metrics and plots (frontier, DP/EO vs rate) are collected below.")
 
-    with gr.Row():
-        run_name = gr.Textbox(label="Latest run", interactive=False)
-        summary_md = gr.Markdown("")
-
-    splitter = gr.Box()
+    run_name = gr.Textbox(label="Latest run", interactive=False)
+    summary_md = gr.Markdown("")
     baseline_table = gr.Dataframe(
         value=pd.DataFrame(), label="Baseline metrics (GLM / NN / ADV_NN)"
     )
-
     gallery = gr.Gallery(label="Fairness plots", columns=3).style(height="240px")
 
-    def refresh():
-        name, summary, df, imgs = load_latest_run()
-        return name, summary, df, imgs
+    def refresh() -> tuple[str, str, pd.DataFrame, list[str]]:
+        return load_latest_run()
 
     refresh_btn = gr.Button("Refresh latest run")
     refresh_btn.click(
