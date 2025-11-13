@@ -8,6 +8,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from torch.utils.data import DataLoader, TensorDataset
 
+from src.common.feature_spec import FeatureSpec, CREDIT_FEATURE_SPEC
+
 from ..evaluation.metrics import compute_accuracy_metrics
 from ..evaluation.fairness import fairness_metrics
 from ..evaluation.thresholds import threshold_for_acceptance_rate
@@ -17,15 +19,14 @@ from ..models.nn_model import (
     train_plain_nn,
 )
 
-NUMERIC_FEATURES = ["S", "D", "L"]
-PROTECTED_FEATURE = "A"
-PROXY_FEATURE = "Z"
-TARGET = "Y"
 
-
-def _prepare_features(df, scaler: StandardScaler | None = None):
-    numeric = df[NUMERIC_FEATURES].to_numpy(dtype=np.float32)
-    proxy = df[[PROXY_FEATURE]].to_numpy(dtype=np.float32)
+def _prepare_features(
+    df,
+    feature_spec: FeatureSpec,
+    scaler: StandardScaler | None = None,
+):
+    numeric = df[list(feature_spec.numeric_features)].to_numpy(dtype=np.float32)
+    proxy = df[[feature_spec.proxy_feature]].to_numpy(dtype=np.float32)
 
     if scaler is None:
         scaler = StandardScaler()
@@ -34,8 +35,8 @@ def _prepare_features(df, scaler: StandardScaler | None = None):
         scaled_numeric = scaler.transform(numeric)
 
     X = np.concatenate([scaled_numeric, proxy], axis=1).astype(np.float32)
-    y = df[TARGET].to_numpy(dtype=np.float32)
-    A = df[PROTECTED_FEATURE].to_numpy(dtype=np.int64)
+    y = df[feature_spec.target_feature].to_numpy(dtype=np.float32)
+    A = df[feature_spec.protected_feature].to_numpy(dtype=np.int64)
     return X, y, A, scaler
 
 
@@ -79,13 +80,17 @@ def train_and_eval_plain_nn(
     train_cfg,
     eval_cfg,
     device: torch.device,
+    feature_spec: FeatureSpec | None = None,
 ) -> dict:
     """
     Train and evaluate a plain neural network classifier.
     """
 
-    X_train, y_train, _, scaler = _prepare_features(df_train)
-    X_test, y_test, A_test, _ = _prepare_features(df_test, scaler=scaler)
+    feature_spec = feature_spec or CREDIT_FEATURE_SPEC
+    X_train, y_train, _, scaler = _prepare_features(df_train, feature_spec)
+    X_test, y_test, A_test, _ = _prepare_features(
+        df_test, feature_spec, scaler=scaler
+    )
 
     train_loader, val_loader = _build_dataloaders(
         X_train, y_train, batch_size=train_cfg.batch_size, seed=sim_cfg.seed

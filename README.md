@@ -41,47 +41,81 @@ The repository includes:
 ## 3. Repository Structure
 
 ```text
-credit_fairness_study/
+bias_mitigation_insurance_pricing/
 ├─ README.md
 ├─ requirements.txt / pyproject.toml
-├─ app.py                             # Streamlit front-end for browsing results
+├─ app.py / apps/                      # HuggingFace / Gradio / Streamlit helpers
 ├─ notebooks/
-│   └─ credit_fairness_demo.ipynb     # interactive walkthrough
+│  ├─ credit_fairness_demo.ipynb
+│  ├─ auto_fairness_demo.ipynb         # planned
+│  └─ life_fairness_demo.ipynb         # planned
 ├─ src/
-│   ├─ __init__.py
-│   ├─ config.py                       # dataclasses for sim / train / eval configs
-│   ├─ data_generation.py              # simulator + stratified split
-│   ├─ models/
-│   │   ├─ __init__.py
-│   │   ├─ glm_model.py                # scikit-learn logistic regression wrapper
-│   │   ├─ nn_model.py                 # plain PyTorch MLP + training helpers
-│   │   └─ adv_nn_model.py             # predictor trunk + adversaries + gradient reversal warm-up
-│   ├─ training/
-│   │   ├─ __init__.py
-│   │   ├─ train_glm.py                # end-to-end GLM pipeline (scaling, training, metrics)
-│   │   ├─ train_nn.py                 # plain NN training loop with loaders + eval
-│   │   └─ train_adv_nn.py             # ADV_NN training with warm-up + fairness metrics
-│   ├─ evaluation/
-│   │   ├─ __init__.py
-│   │   ├─ metrics.py                  # ROC/PR/Brier/log-loss helpers
-│   │   ├─ fairness.py                 # EO/DP metrics + target-rate utilities + thresholding
-│   │   └─ reporting.py                # format/save/print tables
-│   └─ experiments/
-│       ├─ __init__.py
-│       ├─ run_baseline.py             # GLM/NN/ADV_NN comparison
-│       ├─ run_lambda_sweep.py         # sweep λ for ADV_NN
-│       ├─ run_sanity_checks.py        # bias on/off + proxy ablation
-│       ├─ run_fixed_rate_comparison.py# fairness at fixed approval rates
-│       ├─ plot_fairness_accuracy_frontier.py # EO gap vs ROC AUC scatter
-│       └─ plot_fairness_vs_rate.py    # DP ratio & EO gap vs approval rate
-├─ results/                            # timestamped experiment outputs
-│   ├─ README.md                       # index of run IDs and experiment summaries
-│   └─ <run-id>/                       # e.g., results/20251112_184338/
-│       ├─ <experiment>/metrics.csv    # raw metrics
-│       ├─ ...plots...                 # plots per experiment
-│       └─ README.md                   # findings & recommendations for that run
-└─ tests/                              # pytest coverage for data/metrics/models
+│  ├─ common/                          # shared helpers (feature specs, etc.)
+│  ├─ config.py
+│  ├─ products/                        # cross-product registry helpers
+│  │  └─ __init__.py
+│  ├─ credit/
+│  │  ├─ __init__.py
+│  │  └─ data_generation_credit.py
+│  ├─ auto/
+│  │  ├─ __init__.py
+│  │  └─ data_generation_auto.py
+│  ├─ life/
+│  │  ├─ __init__.py
+│  │  └─ data_generation_life.py
+│  ├─ mortgage/
+│  │  ├─ __init__.py
+│  │  └─ data_generation_mortgage.py
+│  ├─ health/
+│  │  ├─ __init__.py
+│  │  └─ data_generation_health.py
+│  ├─ models/
+│  ├─ training/
+│  ├─ evaluation/
+│  │  ├─ metrics.py                  # ROC/PR/Brier/log-loss helpers
+│  │  ├─ fairness.py                 # EO/DP metrics + helper thresholds
+│  │  └─ reporting.py                # format/save/print tables
+│  └─ experiments/
+│      ├─ auto/
+│      │  ├─ __init__.py
+│      │  ├─ baseline.py
+│      │  ├─ lambda_sweep.py
+│      │  ├─ sanity_checks.py
+│      │  ├─ bias_sweep.py
+│      │  ├─ fairness_frontier.py
+│      │  └─ full_pipeline.py
+│      ├─ credit/
+│      │  ├─ __init__.py
+│      │  ├─ baseline.py
+│      │  ├─ lambda_sweep.py
+│      │  ├─ fixed_rate_comparison.py
+│      │  └─ sanity_checks.py
+│      ├─ plot_fairness_accuracy_frontier.py # EO gap vs ROC AUC scatter
+│      └─ plot_fairness_vs_rate.py    # DP ratio & EO gap vs approval rate
+├─ results/
+│  ├─ credit/
+│  │  └─ <run-id>/                     # e.g., results/credit/20251112_184338/
+│  ├─ auto/
+│  │  └─ <run-id>/
+│  │      └─ debug_auto_distributions/  # histogram snapshots for that run
+│  ├─ life/
+│  │  └─ <run-id>/
+│  ├─ mortgage/
+│  │  └─ <run-id>/
+│  └─ health/
+│      └─ <run-id>/
+└─ tests/
 ```
+
+---
+
+## Product Lines
+
+- **Credit underwriting** – implemented, backed by `src/credit/data_generation_credit.py`.
+- **Auto insurance pricing** – implemented with `src/auto/data_generation_auto.py`, `src/experiments.auto.baseline`, and `src/experiments.auto.bias_sweep`; run `python -m src.experiments.auto.bias_sweep` to sweep `bias_strength` and write `results/auto/auto_bias_sweep_metrics.csv`. Use `python -m src.experiments.auto.full_pipeline` to re-run the baseline/lambda/sanity/bias sequence.
+- **Life insurance** – planned / work in progress; scaffolded under `src/life/` with `src/experiments/run_life_baseline.py`.
+- **Mortgage insurance** – planned / work in progress; scaffolded under `src/mortgage/` with `src/experiments/run_mortgage_baseline.py`.
+- **Health insurance** – planned / work in progress; scaffolded under `src/health/` with `src/experiments/run_health_baseline.py`.
 
 ---
 

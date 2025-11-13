@@ -11,7 +11,10 @@ from sklearn.preprocessing import StandardScaler
 from torch.utils.data import DataLoader, TensorDataset
 
 from src.config import get_default_configs
-from src.data_generation import generate_credit_insurance_data, train_test_split_df
+from src.credit import (
+    generate_credit_underwriting_data,
+    train_test_split_df,
+)
 from src.evaluation.fairness import fairness_at_target_rate
 from src.evaluation.metrics import compute_accuracy_metrics
 from src.models.adv_nn_model import AdvPredictor, predict_proba_adv_nn, train_adv_nn
@@ -74,7 +77,7 @@ def _evaluate_model(model_name: str, y_test, y_proba, A_test, target_rate: float
 def main() -> None:
     sim_cfg, train_cfg, eval_cfg = get_default_configs()
 
-    df = generate_credit_insurance_data(sim_cfg)
+    df = generate_credit_underwriting_data(sim_cfg)
     df_train, df_test = train_test_split_df(df, test_size=0.2, seed=sim_cfg.seed)
 
     X_train, y_train, A_train, scaler = _prepare_features(df_train, None)

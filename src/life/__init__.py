@@ -1,0 +1,3 @@
+from __future__ import annotations
+
+from .data_generation_life import simulate_life_insurance_data

@@ -1,0 +1,3 @@
+from __future__ import annotations
+
+from .data_generation_health import simulate_health_insurance_data

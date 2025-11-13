@@ -46,3 +46,39 @@ def get_default_configs() -> tuple[SimulationConfig, TrainingConfig, EvalConfig]
     """
 
     return SimulationConfig(), TrainingConfig(), EvalConfig()
+
+
+@dataclass(slots=True)
+class AutoSimulationConfig:
+    n_samples: int = 60_000
+    seed: int = 202
+    p_protected: float = 0.3
+    target_claim_freq: float = 0.10
+    p_extra_violation: float = 0.3
+    p_extra_claim: float = 0.2
+    beta_age2: float = 0.3
+    beta_exp: float = 0.4
+    beta_mileage: float = 0.25
+    beta_territory: float = 0.3
+    beta_use: float = 0.25
+    beta_past_claims: float = 0.5
+    beta_violations: float = 0.3
+    alpha_sev0: float = 7.5
+    alpha_log_value: float = 0.4
+    alpha_safety: float = -0.5
+    sigma_sev: float = 0.5
+    gamma_age2: float = 0.25
+    gamma_exp: float = 0.3
+    gamma_mileage: float = 0.2
+    gamma_territory: float = 0.25
+    gamma_use: float = 0.2
+    gamma_past_claims: float = 0.6
+    gamma_violations: float = 0.4
+    gamma_credit: float = 0.08
+    gamma_income: float = -0.10
+    premium_base_log: float = 5.5
+    bias_strength: float = 1.0
+
+
+def get_default_auto_simulation_config() -> AutoSimulationConfig:
+    return AutoSimulationConfig()

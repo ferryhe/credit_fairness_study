@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-from .config import SimulationConfig
+from src.config import SimulationConfig
 
 
 def _sigmoid(x: np.ndarray) -> np.ndarray:
@@ -50,9 +50,9 @@ def _solve_intercept(
     return intercept, p
 
 
-def generate_credit_insurance_data(sim_cfg: SimulationConfig) -> pd.DataFrame:
+def generate_credit_underwriting_data(sim_cfg: SimulationConfig) -> pd.DataFrame:
     """
-    Simulate a biased credit-insurance dataset.
+    Simulate a biased credit-underwriting dataset.
     """
 
     rng = np.random.default_rng(sim_cfg.seed)
@@ -89,13 +89,16 @@ def generate_credit_insurance_data(sim_cfg: SimulationConfig) -> pd.DataFrame:
 
 
 def train_test_split_df(
-    df: pd.DataFrame, test_size: float = 0.2, seed: int = 42
+    df: pd.DataFrame,
+    test_size: float = 0.2,
+    seed: int = 42,
+    target_col: str = "Y",
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
     Stratified split on Y. Return (df_train, df_test).
     """
 
     df_train, df_test = train_test_split(
-        df, test_size=test_size, random_state=seed, stratify=df["Y"]
+        df, test_size=test_size, random_state=seed, stratify=df[target_col]
     )
     return df_train.reset_index(drop=True), df_test.reset_index(drop=True)

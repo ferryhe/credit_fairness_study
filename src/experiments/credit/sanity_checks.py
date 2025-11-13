@@ -8,7 +8,10 @@ import pandas as pd
 import torch
 
 from src.config import get_default_configs
-from src.data_generation import generate_credit_insurance_data, train_test_split_df
+from src.credit import (
+    generate_credit_underwriting_data,
+    train_test_split_df,
+)
 from src.evaluation.reporting import save_metrics
 from src.training.train_adv_nn import train_and_eval_adv_nn
 from src.training.train_glm import train_and_eval_glm
@@ -37,7 +40,7 @@ def run_measurement_bias_experiment(sim_cfg, device, train_cfg, eval_cfg):
     rows = []
     for label, bias in scenarios:
         sim_case = replace(sim_cfg, bias_b=bias)
-        df = generate_credit_insurance_data(sim_case)
+        df = generate_credit_underwriting_data(sim_case)
         df_train, df_test = train_test_split_df(df, test_size=0.2, seed=sim_case.seed)
 
         glm_metrics = train_and_eval_glm(df_train, df_test, eval_cfg)
@@ -62,7 +65,7 @@ def run_measurement_bias_experiment(sim_cfg, device, train_cfg, eval_cfg):
 
 
 def run_proxy_experiment(sim_cfg, device, train_cfg, eval_cfg):
-    df = generate_credit_insurance_data(sim_cfg)
+    df = generate_credit_underwriting_data(sim_cfg)
     df_train, df_test = train_test_split_df(df, test_size=0.2, seed=sim_cfg.seed)
 
     scenarios = [

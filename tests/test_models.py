@@ -9,7 +9,10 @@ from sklearn.preprocessing import StandardScaler
 from torch.utils.data import DataLoader, TensorDataset
 
 from src.config import SimulationConfig, TrainingConfig
-from src.data_generation import generate_credit_insurance_data, train_test_split_df
+from src.credit import (
+    generate_credit_underwriting_data,
+    train_test_split_df,
+)
 from src.models.adv_nn_model import AdvPredictor, predict_proba_adv_nn, train_adv_nn
 from src.models.glm_model import GLMClassifier
 from src.models.nn_model import PlainNN, predict_proba_plain_nn, train_plain_nn
@@ -35,7 +38,7 @@ def _prepare_features(df, scaler: StandardScaler | None = None):
 
 def test_glm_classifier_probabilities():
     sim_cfg = SimulationConfig(n_samples=400, seed=101)
-    df = generate_credit_insurance_data(sim_cfg)
+    df = generate_credit_underwriting_data(sim_cfg)
     df_train, df_test = train_test_split_df(df, test_size=0.3, seed=sim_cfg.seed)
 
     X_train, y_train, _, scaler = _prepare_features(df_train)
@@ -69,7 +72,7 @@ def _build_plain_nn_loaders(X: np.ndarray, y: np.ndarray, batch_size: int, seed:
 
 def test_plain_nn_training_and_prediction():
     sim_cfg = SimulationConfig(n_samples=500, seed=202)
-    df = generate_credit_insurance_data(sim_cfg)
+    df = generate_credit_underwriting_data(sim_cfg)
     df_train, df_test = train_test_split_df(df, test_size=0.3, seed=sim_cfg.seed)
 
     X_train, y_train, _, scaler = _prepare_features(df_train)
@@ -97,7 +100,7 @@ def test_plain_nn_training_and_prediction():
 
 def test_adv_nn_training_and_prediction():
     sim_cfg = SimulationConfig(n_samples=500, seed=303)
-    df = generate_credit_insurance_data(sim_cfg)
+    df = generate_credit_underwriting_data(sim_cfg)
     df_train, df_test = train_test_split_df(df, test_size=0.3, seed=sim_cfg.seed)
 
     X_train, y_train, A_train, scaler = _prepare_features(df_train)

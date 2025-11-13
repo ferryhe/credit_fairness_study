@@ -1,0 +1,3 @@
+from __future__ import annotations
+
+from .data_generation_auto import generate_auto_insurance_data
