@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import numpy as np
 from sklearn.preprocessing import StandardScaler
 
 from src.common.feature_spec import FeatureSpec, CREDIT_FEATURE_SPEC
@@ -35,7 +34,8 @@ def train_and_eval_glm(
     df_test,
     eval_cfg,
     feature_spec: FeatureSpec | None = None,
-) -> dict:
+    return_predictions: bool = False,
+) -> dict | tuple[dict, dict]:
     """
     Train a GLMClassifier on df_train and evaluate on df_test.
     """
@@ -63,5 +63,10 @@ def train_and_eval_glm(
         **accuracy,
         **fairness,
     }
+    predictions = {
+        "y_true": y_test,
+        "y_score": y_proba,
+        "A": A_test,
+    }
 
-    return metrics
+    return (metrics, predictions) if return_predictions else metrics

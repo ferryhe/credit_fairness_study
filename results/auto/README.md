@@ -32,7 +32,7 @@ Each run directory now keeps structured subfolders:
 - As `bias_strength` climbs, unconstrained NN metrics show sharply increasing FPR gaps and DP ratios falling toward 1.0, while ADV_NN maintains smaller EO gaps (~0.06-0.08) and DP ratios around 1.13-1.16, documenting the trade-offs you can explore in future sweeps.
 - Keep this section synchronized with the CSV: rerun the bias sweep, replace the CSV if it changes, and briefly describe any emerging patterns here so downstream readers can quickly understand the latest bias/fairness signals.
 - The latest runs are archived under `results/auto/20251113_191359/` (bias sweep + diagnostics) and `results/auto/20251113_194731/` (fairness helper rerun); each folder contains a README plus the `metrics/auto_bias_sweep_metrics.csv` copy for easy reference.
-- Plot outputs from the latest sweep are available under `results/auto/bias_sweep_plots/20251113_195242/`; they visualize ROC AUC, EO gaps (TPR/FPR), and fixed-rate DP ratio versus `bias_strength`, and the script that generates them is `src/experiments/auto/plot_bias_sweep_curves.py`.
+- Plot outputs from the latest sweep are available under `results/auto/bias_sweep_plots/20251113_195813/`; they visualize ROC AUC, EO gaps (TPR/FPR), and fixed-rate DP ratio versus `bias_strength`, and the script that generates them is `src/experiments/auto/plot_bias_sweep_curves.py`. Each rerun creates a timestamped subfolder so you can compare different sweeps side by side.
 
 Shared artifacts:
 
