@@ -14,27 +14,6 @@ from src.evaluation.reporting import format_metrics_table, save_metrics
 from src.experiments.auto_baseline_utils import AUTO_FEATURE_SPEC, run_auto_models
 
 
-AUTO_FEATURE_SPEC = FeatureSpec(
-    numeric_features=(
-        "territory",
-        "age",
-        "years_licensed",
-        "annual_mileage",
-        "vehicle_use",
-        "vehicle_age",
-        "vehicle_value",
-        "safety_score",
-        "past_claims_obs",
-        "violations_obs",
-        "credit_score",
-        "income",
-    ),
-    protected_feature="A",
-    proxy_feature="territory",
-    target_feature="claim_indicator",
-)
-
-
 def main() -> None:
     sim_cfg = get_default_auto_simulation_config()
     _, train_cfg, eval_cfg = get_default_configs()
