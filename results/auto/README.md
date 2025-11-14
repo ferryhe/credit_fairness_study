@@ -21,6 +21,10 @@ To add a new auto run:
 | 20251113_183405 | Auto sanity checks covering measurement bias vs unbiased (`bias_strength`) and proxy ablation; GLM + ADV-NN metrics compared. |
 | 20251113_191359 | Dedicated bias sweep capture; folder holds the metrics CSV plus a run-level README explaining the bias_strength grid, reasons for the run, and the fairness/accuracy takeaways. |
 
+Each run directory now keeps structured subfolders:
+- `metrics/` for aggregated CSV exports (e.g., the bias sweep table).
+- `diagnostics/` for follow-up plots or investigation bundles (like the NN score/distribution plots produced after the sweep).
+
 ## Bias sweep insights
 
 - The latest `python -m src.experiments.auto.bias_sweep` sweep lives in `results/auto/auto_bias_sweep_metrics.csv`; ROC AUC across GLM/NN/ADV_NN hovers between 0.75 and 0.81, with the adversarial model defending against performance drops when `bias_strength` increases to 2.0.
